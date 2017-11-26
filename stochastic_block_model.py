@@ -1,61 +1,52 @@
-from spectral_clustering_algorithm import spectral_clustering, spectral_clustering_lbr
+from spectral_clustering import SignedNetworkSpectralClustering
 import numpy as np
 from sklearn import metrics
-
-
 import matplotlib.pyplot as plt
-#import networkx as nx
 
 
-def same_cluster(i, j, k):
-    return i%k == j%k
+class StochasticBlockModel:
+
+    def __init__(self, p_in_pos, p_in_neg, p_out_pos, p_out_neg, num_clusters, cluster_size):
+        self.p_in_pos = p_in_pos
+        self.p_in_neg = p_in_neg
+        self.p_out_pos = p_out_pos
+        self.p_out_neg =  p_out_neg
+        self.num_clusters = num_clusters
+        self.cluster_size = cluster_size
+
+    def same_cluster(self, i, j):
+        return i/self.cluster_size == j/self.cluster_size
+
+    def cluster_assignmnet(self, i):
+        return i/self.cluster_size
+
+    def generate_signed_graph(self):
+
+        num_vertices = self.num_clusters * self.cluster_size
+
+        positive_weight_matrix = np.zeros((num_vertices, num_vertices))
+        negative_weight_matrix = np.zeros((num_vertices, num_vertices))
+
+        for i in range(num_vertices):
+            for j in range(i, num_vertices):
+                if self.same_cluster(i, j):
+                    positive_weight_matrix[i][j] = np.random.choice([1, 0], p=[self.p_in_pos, 1 - self.p_in_pos])
+                    negative_weight_matrix[i][j] = np.random.choice([1, 0], p=[self.p_in_neg, 1 - self.p_in_neg])
+                else:
+                    positive_weight_matrix[i][j] = np.random.choice([1, 0], p=[self.p_out_pos, 1 - self.p_out_pos])
+                    negative_weight_matrix[i][j] = np.random.choice([1, 0], p=[self.p_out_neg, 1 - self.p_out_neg])
+
+                positive_weight_matrix[j][i] = positive_weight_matrix[i][j]
+                negative_weight_matrix[j][i] = negative_weight_matrix[i][j]
+
+        return positive_weight_matrix, negative_weight_matrix
 
 
-def stochastic_block_method(k, cluster_size):
-
-    p_in_pos = 0.08
-    p_in_neg = 0.01
-    p_out_pos = 0.075
-    p_out_neg = 0.09
-
-    n = k * cluster_size
-
-    positive_weight_matrix = np.zeros((n, n))
-    negative_weight_matrix = np.zeros((n, n))
-
-    for i in range(n):
-        for j in range(i, n):
-            if same_cluster(i, j, k):
-                positive_weight_matrix[i][j] = np.random.choice([1, 0], p=[p_in_pos, 1 - p_in_pos])
-                negative_weight_matrix[i][j] = np.random.choice([1, 0], p=[p_in_neg, 1 - p_in_neg])
-            else:
-                positive_weight_matrix[i][j] = np.random.choice([1, 0], p=[p_out_pos, 1 - p_out_pos])
-                negative_weight_matrix[i][j] = np.random.choice([1, 0], p=[p_out_neg, 1 - p_out_neg])
-
-            positive_weight_matrix[j][i] = positive_weight_matrix[i][j]
-            negative_weight_matrix[j][i] = negative_weight_matrix[i][j]
-
-    return positive_weight_matrix, negative_weight_matrix
-
-pos_matrix, neg_matrix = stochastic_block_method(3, 100)
-
-print pos_matrix
-print neg_matrix
-
-cluster_labels = spectral_clustering(pos_matrix, neg_matrix, 3)
-print cluster_labels
 
 
-correct_labels = [i%3 for i in range(300)]
-print metrics.adjusted_rand_score(correct_labels, cluster_labels)
 
 
-cluster_labels = spectral_clustering_lbr(pos_matrix, neg_matrix, 3)
-print cluster_labels
 
-
-correct_labels = [i%3 for i in range(300)]
-print metrics.adjusted_rand_score(correct_labels, cluster_labels)
 
 
 
