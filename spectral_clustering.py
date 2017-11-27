@@ -73,8 +73,8 @@ class SignedNetworkSpectralClustering:
         """
         L_gm = L_sym # Q_sym
         """
-        L_sym = self.__diagonal_shift(self.__compute_L_sym(), 0.001)
-        Q_sym = self.__diagonal_shift(self.__compute_Q_sym(), 0.001)
+        L_sym = self.__diagonal_shift(self.__compute_L_sym(), 0.1)
+        Q_sym = self.__diagonal_shift(self.__compute_Q_sym(), 0.1)
 
         L_gm = self.__compute_geometric_mean(L_sym, Q_sym)
 
@@ -111,8 +111,8 @@ class SignedNetworkSpectralClustering:
         """
         L_am = L_sym + Q_sym
         """
-        L_sym = self.__diagonal_shift(self.__compute_L_sym(), 0.01)
-        Q_sym = self.__diagonal_shift(self.__compute_Q_sym(), 0.01)
+        L_sym = self.__diagonal_shift(self.__compute_L_sym(), 0.1)
+        Q_sym = self.__diagonal_shift(self.__compute_Q_sym(), 0.1)
         L_am = L_sym + Q_sym
 
         return L_am

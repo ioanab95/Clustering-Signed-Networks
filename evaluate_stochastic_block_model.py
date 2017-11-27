@@ -126,7 +126,7 @@ def vary_num_clusters():
 
 
 def run_sthocastic_block_method(stochastic_block_model, laplacian_operators, num_clusters, correct_labels):
-    num_runs = 100
+    num_runs = 50
 
     clustering_score = dict()
     for operator in laplacian_operators:
@@ -140,7 +140,7 @@ def run_sthocastic_block_method(stochastic_block_model, laplacian_operators, num
         spectral_clustering = SignedNetworkSpectralClustering(pos_weights, neg_weights, num_clusters)
         for operator in laplacian_operators:
             cluster_labels = spectral_clustering.computer_clusters(laplacian_operator=operator)
-            clustering_score[operator] += [metrics.normalized_mutual_info_score(cluster_labels, correct_labels)]
+            clustering_score[operator] += [metrics.adjusted_mutual_info_score(cluster_labels, correct_labels)]
 
     for operator in laplacian_operators:
         clustering_score[operator] = np.median(clustering_score[operator])
