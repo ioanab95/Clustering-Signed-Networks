@@ -1,8 +1,9 @@
-from stochastic_block_model import StochasticBlockModel
-from spectral_clustering import SignedNetworkSpectralClustering
+import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import metrics
-import matplotlib.pyplot as plt
+
+from spectral_clustering import SignedNetworkSpectralClustering
+from stochastic_block_model import StochasticBlockModel
 
 
 def plot_clustering_scores(laplacian_scores, x_datapoints, x_label):
@@ -51,11 +52,11 @@ def vary_p_in_neg():
         stochastic_block_model = StochasticBlockModel(
             p_in_pos, p_in_neg, p_out_pos, p_out_neg, num_clusters, cluster_size)
         correct_labels = [stochastic_block_model.cluster_assignmnet(i) for i in range(num_data_points)]
-        clustering_score, _, _ = run_sthocastic_block_method(stochastic_block_model, operators, num_clusters, correct_labels)
+        clustering_score, _, _ = run_sthocastic_block_method(stochastic_block_model, operators, num_clusters,
+                                                             correct_labels)
         print clustering_score
         for operator in operators:
             laplacian_scores[operator] += [clustering_score[operator]]
-
 
     x_datapoints = [i * 0.02 for i in range(51)]
     print laplacian_scores
@@ -84,11 +85,11 @@ def vary_p_out_pos():
         stochastic_block_model = StochasticBlockModel(
             p_in_pos, p_in_neg, p_out_pos, p_out_neg, num_clusters, cluster_size)
         correct_labels = [stochastic_block_model.cluster_assignmnet(i) for i in range(num_data_points)]
-        clustering_score, _, _ = run_sthocastic_block_method(stochastic_block_model, operators, num_clusters, correct_labels)
+        clustering_score, _, _ = run_sthocastic_block_method(stochastic_block_model, operators, num_clusters,
+                                                             correct_labels)
         print clustering_score
         for operator in operators:
             laplacian_scores[operator] += [clustering_score[operator]]
-
 
     x_datapoints = [i * 0.02 for i in range(51)]
     print laplacian_scores
@@ -96,10 +97,10 @@ def vary_p_out_pos():
 
 
 def vary_num_clusters():
-    p_in_pos = 0.3
+    p_in_pos = 0.4
     p_in_neg = 0.1
     p_out_pos = 0.05
-    p_out_neg = 0.25
+    p_out_neg = 0.2
 
     cluster_size = 30
 
@@ -145,12 +146,8 @@ def run_sthocastic_block_method(stochastic_block_model, laplacian_operators, num
     for operator in laplacian_operators:
         clustering_score[operator] = np.median(clustering_score[operator])
 
-    exp_pos = exp_pos/(num_runs+1)
-    exp_neg = exp_neg/(num_runs+1)
-
-    #plt.matshow(exp_pos, cmap="summer")
-    #plt.matshow(exp_neg, cmap="summer")
-    #plt.show()
+    exp_pos = exp_pos / (num_runs + 1)
+    exp_neg = exp_neg / (num_runs + 1)
 
     return clustering_score, exp_pos, exp_neg
 
@@ -182,6 +179,7 @@ def plot_expectation_matrices(exp_pos, exp_neg, exp_pos_1, exp_neg_1):
     plt.yticks(fontsize=14)
 
     fig.savefig("dissassortative_matrix.pdf")
+
 
 def plot_dissassortative_matrices():
     num_clusters = 4
@@ -234,55 +232,9 @@ def plot_assortative_matrices():
 
     plot_expectation_matrices(exp_pos, exp_neg, exp_pos_1, exp_neg_1)
 
-#vary_p_in_neg()
 
-#vary_p_out_pos()
-
+vary_p_in_neg()
+vary_p_out_pos()
 vary_num_clusters()
-
-#plot_dissassortative_matrices()
-
-
-"""
-
-
-k = 3
-cluster_size = 100
-
-p_in_pos = 0.4
-p_in_neg = 0.5
-p_out_pos = 0.075
-p_out_neg = 0.1
-
-
-stochastic_block_model = StochasticBlockModel(p_in_pos, p_in_neg, p_out_pos, p_out_neg, k, cluster_size)
-
-num_data_points = k * cluster_size
-pos_matrix, neg_matrix = stochastic_block_model.generate_signed_graph()
-plt.matshow(pos_matrix, cmap="summer")
-plt.matshow(neg_matrix, cmap="summer")
-plt.show()
-
-spectral_clustering = SignedNetworkSpectralClustering(pos_matrix, neg_matrix, k)
-correct_labels = [i/cluster_size for i in range(num_data_points)]
-print pos_matrix
-print neg_matrix
-
-cluster_labels = spectral_clustering.computer_clusters(laplacian_operator='L_gm')
-print cluster_labels
-print metrics.normalized_mutual_info_score(correct_labels, cluster_labels)
-
-
-cluster_labels = spectral_clustering.computer_clusters(laplacian_operator='L_sn')
-print cluster_labels
-print metrics.normalized_mutual_info_score(correct_labels, cluster_labels)
-
-cluster_labels = spectral_clustering.computer_clusters(laplacian_operator='L_bn')
-print cluster_labels
-print metrics.normalized_mutual_info_score(correct_labels, cluster_labels)
-
-cluster_labels = spectral_clustering.computer_clusters(laplacian_operator='L_am')
-print cluster_labels
-print metrics.normalized_mutual_info_score(correct_labels, cluster_labels)
-
-"""
+plot_assortative_matrices()
+plot_dissassortative_matrices()

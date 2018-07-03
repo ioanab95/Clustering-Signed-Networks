@@ -1,11 +1,11 @@
-
+import matplotlib.pyplot as plt
+import numpy as np
 from sklearn import datasets
 from sklearn import metrics
-import matplotlib.pyplot as plt
-from spectral_clustering import SignedNetworkSpectralClustering
 from sklearn.model_selection import ParameterGrid
+
 from real_word_datasets import signed_network
-import numpy as np
+from spectral_clustering import SignedNetworkSpectralClustering
 
 
 def grid_search_parameters(data, targets, num_clusters, laplacian_operators):
@@ -56,7 +56,7 @@ def plot_clustering_scores(laplacian_scores, x_datapoints):
     plt.ylabel('Clustering score', size=22)
     plt.xticks(fontsize=18)
     plt.yticks(fontsize=18)
-    fig.savefig("olivetti.pdf")
+    fig.savefig("olivetti_1.pdf")
 
 
 def vary_k_neg(data, target, num_clusters, laplacian_operators):
@@ -80,21 +80,13 @@ def vary_k_neg(data, target, num_clusters, laplacian_operators):
     plot_clustering_scores(laplacian_scores, k_neg_values)
 
 
-
-laplacian_operators = ['L_sn', 'L_bn', 'L_am', 'L_gm']
+laplacian_operators = ['L_sn', 'L_bn', 'L_am', 'L_gm', 'L_sym', 'Q_sym']
 iris_data, iris_target = datasets.load_iris(return_X_y=True)
-#num_clusters = 3
-#vary_k_neg(iris_data, iris_target, num_clusters, laplacian_operators)
-#grid_search_parameters(iris_data, iris_target, num_clusters, laplacian_operators)
+num_clusters = 3
+vary_k_neg(iris_data, iris_target, num_clusters, laplacian_operators)
+grid_search_parameters(iris_data, iris_target, num_clusters, laplacian_operators)
 
 faces = datasets.fetch_olivetti_faces()
 faces_data, faces_target = faces.data, faces.target
 num_clusters = 40
-#vary_k_neg(faces_data, faces_target, num_clusters, laplacian_operators)
-grid_search_parameters(faces_data, faces_target, num_clusters, laplacian_operators)
-
-#pos_weights, neg_weights = signed_network(faces_data, 5, 6)
-#plt.matshow(pos_weights)
-#plt.matshow(neg_weights)
-#plt.show()
-
+vary_k_neg(faces_data, faces_target, num_clusters, laplacian_operators)
